@@ -1,11 +1,13 @@
 use bevy::prelude::*;
 
+use crate::common::AppState;
+
 pub struct CameraPlugin;
 
 impl Plugin for CameraPlugin {
     fn build(&self, app: &mut App) {
-        app.add_systems(Startup, setup_camera)
-            .add_systems(Update, camera_movement);
+        app.add_systems(OnEnter(AppState::Setup), setup_camera);
+        app.add_systems(Update, camera_movement.run_if(in_state(AppState::Finished)));
     }
 }
 
