@@ -3,9 +3,9 @@ use bevy::render::color::Color;
 use noise::{utils::*, BasicMulti, Perlin};
 use rand::{thread_rng, Rng};
 
-use crate::common::AppState;
+use crate::{common::AppState, events::ResetMapEvent};
 
-use super::keyboard::ResetMapEvent;
+use super::ui::UIWorldState;
 
 pub struct WorldPlugin;
 
@@ -17,13 +17,15 @@ impl Plugin for WorldPlugin {
     }
 }
 
-fn generate_noise_map() -> NoiseMap {
+fn generate_noise_map(width: usize, height: usize) -> NoiseMap {
     let mut rng = thread_rng();
     let seed: u32 = rng.gen();
 
     let basicmulti = BasicMulti::<Perlin>::new(seed);
 
-    PlaneMapBuilder::<_, 2>::new(&basicmulti).build()
+    PlaneMapBuilder::<_, 2>::new(&basicmulti)
+        .set_size(width, height)
+        .build()
 }
 
 #[derive(Resource, Deref)]
@@ -46,8 +48,12 @@ fn get_colour(val: f64) -> Color {
     color_result.expect("Getting color from HEX error")
 }
 
-fn generate_world(mut commands: Commands, mut next_state: ResMut<NextState<AppState>>) {
-    let map = generate_noise_map();
+fn generate_world(
+    mut commands: Commands,
+    mut next_state: ResMut<NextState<AppState>>,
+    ui_world_state: Res<UIWorldState>,
+) {
+    let map = generate_noise_map(ui_world_state.width, ui_world_state.height);
     let (grid_width, grid_height) = map.size();
     debug!("map size: {}x{}", grid_width, grid_height);
 
