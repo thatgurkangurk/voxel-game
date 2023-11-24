@@ -55,7 +55,7 @@ fn world_settings(
         );
 
         if ui
-            .button(RichText::new("Width").color(Color32::from_rgb(255, 255, 255)))
+            .button(RichText::new("Generate").color(Color32::from_rgb(255, 255, 255)))
             .clicked()
         {
             if state.get() != &AppState::Finished {
